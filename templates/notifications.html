@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Notifications</h2>
+    <p>You have {{ unread_count }} unread notifications.</p>
+    <ul class="list-group mt-3">
+        {% for notification in notifications %}
+            <li class="list-group-item d-flex justify-content-between align-items-center" data-id="{{ notification.id }}">
+                <div class="d-flex align-items-center">
+                    <!-- Sender's profile photo and name link -->
+                    <a href="{% url 'profile_detail' username=notification.sender.user.username %}" class="mr-3">
+                        <img src="{{ notification.sender.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='{% static 'path/to/default/image.jpg' %}'">
+                    </a>
+                    <div>
+                        <a href="{% url 'profile_detail' username=notification.sender.user.username %}" class="text-dark font-weight-bold">
+                            {{ notification.sender.first_name }} {{ notification.sender.last_name }}
+                        </a>
+                        <p class="mb-0">
+                            {% if notification.notification_type == 'interest_accepted' %}
+                                {{ notification.sender.first_name }} has accepted your interest request.
+                            {% elif notification.notification_type == 'interest_declined' %}
+                                {{ notification.sender.first_name }} has declined your interest request.
+                            {% else %}
+                                {{ notification.message }}
+                            {% endif %}
+                        </p>
+                        <small class="text-muted">{{ notification.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    {% if notification.notification_type == 'interest_request' and notification.receiver == request.user.profile %}
+                    <button class="btn btn-success btn-sm mr-2 accept-button" data-id="{{ notification.id }}">Accept</button>
+                    <button class="btn btn-danger btn-sm mr-2 decline-button" data-id="{{ notification.id }}">Decline</button>
+                    {% endif %}
+                    {% if not notification.is_read %}
+                        <a href="{% url 'mark_as_read' notification.id %}" class="btn btn-secondary btn-sm">Mark as Read</a>
+                    {% endif %}
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">No notifications available.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Combined handling for accept and decline buttons
+        const handleButtonClick = (button, action) => {
+            const notificationId = button.dataset.id;
+
+            button.innerHTML = `${action.charAt(0).toUpperCase() + action.slice(1)}...`;
+            button.disabled = true;
+
+            fetch(`/${action}-interest/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    const parentLi = button.closest('li');
+                    parentLi.innerHTML = `<span class="text-${action === 'accept' ? 'success' : 'danger'}">${action.charAt(0).toUpperCase() + action.slice(1)}d</span>`;
+                } else {
+                    handleError(button, action);
+                }
+            })
+            .catch(error => handleError(button, action));
+        };
+
+        const handleError = (button, action) => {
+            // Set the button's inner HTML to display an error message based on the action
+            button.innerHTML = `Error ${action.charAt(0).toUpperCase() + action.slice(1)}`;
+            button.disabled = false;
+        
+            // Customize the alert message based on the action
+            if (action === 'accept') {
+                alert('An error occurred while accepting the interest request. Please try again later.');
+            } else if (action === 'decline') {
+                alert('An error occurred while declining the interest request. Please try again later.');
+            } else {
+                alert('An error occurred. Please try again later.'); // Fallback for unexpected actions
+            }
+        };
+
+        document.querySelectorAll('.accept-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                handleButtonClick(this, 'accept');
+            });
+        });
+
+        document.querySelectorAll('.decline-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                handleButtonClick(this, 'decline');
+            });
+        });
+    });
+</script>
+
+{% endblock %}
+
+

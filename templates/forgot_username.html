@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Forgot Username{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Forgot Username</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Send Username</button>
+    </form>
+</div>
+{% endblock %}

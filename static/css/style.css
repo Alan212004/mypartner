@@ -1,0 +1,219 @@
+/* General Styling */
+body {
+    background-color: #f8f9fa; /* Light gray background */
+    font-family: 'Helvetica', sans-serif; /* Modern font for readability */
+}
+
+/* Container Styling */
+.container {
+    padding-top: 25px; /* Space at the top of the container */
+}
+
+/* Navbar Customization */
+.navbar {
+    margin-bottom: 15px; /* Space below the navbar */
+    border-bottom: 2px solid #000000; /* Light border below navbar */
+
+}
+
+.navbar {
+    position: sticky;
+    top: 0; /* Position it at the top of the page */
+    z-index: 1000; /* Ensures the navbar stays on top of other content */
+    padding: 10px 20px;
+
+}
+
+
+/* Card Customization */
+.card {
+    border-radius: 10px; /* Rounded corners for cards */
+    background-color: #ffffff; /* White background for cards */
+    border: 1px solid #eaeaea; /* Light border for definition */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effects */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
+}
+
+/* Profile Image Styling */
+.card-img-top {
+    object-fit: cover; /* Ensure images cover the area without distortion */
+    border-radius: 10px 10px 0 0; /* Rounded corners on top of the card */
+}
+
+/* Text Styling */
+h2, h3 {
+    color: #343a40; /* Dark gray for headings */
+}
+
+/* Link Styling */
+a {
+    color: #007bff; /* Bootstrap primary color for links */
+    text-decoration: none; /* Remove underline from links */
+}
+
+a:hover {
+    text-decoration: underline; /* Underline on hover for better UX */
+}
+
+/* Form Styling */
+form {
+    margin-top: 20px; /* Margin above forms */
+}
+
+form .form-control {
+    border-radius: 5px; /* Rounded corners for inputs */
+    border: 1px solid #ced4da; /* Light border for inputs */
+    padding: 10px; /* Padding inside inputs */
+    font-size: 16px; /* Font size for inputs */
+}
+
+/* Button Styles */
+button.btn-primary {
+    background-color: #007bff; /* Primary button color */
+    border: none; /* No border */
+    font-size: 16px; /* Font size for buttons */
+    padding: 10px; /* Padding inside buttons */
+    border-radius: 5px; /* Rounded corners for buttons */
+    transition: background-color 0.3s ease; /* Smooth background change */
+}
+
+button.btn-primary:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Text Centering */
+.text-center {
+    text-align: center; /* Center text alignment */
+}
+
+/* Error Message Styling */
+.text-danger {
+    color: #dc3545; /* Bootstrap danger color for errors */
+    font-size: 14px; /* Font size for error messages */
+    margin-top: 5px; /* Space between input and error message */
+}
+
+/* Custom Hover Animation for Profile Cards */
+.card-hover {
+    transition: transform 0.3s ease; /* Smooth transition for scaling */
+}
+
+.card-hover:hover{
+    transform: scale(1.05); /* Slight scale up on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Ensuring Rounded Images with Consistent Size */
+.card-img-top {
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    border: 3px solid #ddd; /* Optional border for rounded images */
+}
+
+/* Optional: Center the Card Text */
+.card-body.text-center {
+    text-align: center; /* Centered text in card bodies */
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .login-container {
+        width: 90%; /* Make the login form wider on small screens */
+    }
+
+    .card {
+        margin: 10px; /* Margin on smaller screens */
+    }
+
+    h2, h3 {
+        font-size: 1.5rem; /* Smaller font size for headings */
+    }
+}
+
+/* Focus Styles for Accessibility */
+button:focus,
+a:focus {
+    outline: 2px solid #0056b3; /* Distinct outline on focus */
+    outline-offset: 2px; /* Space between the outline and the element */
+}
+
+/* Footer Styling */
+footer {
+    background-color: #f1f1f1; /* Light gray background for footer */
+    text-align: center; /* Centered text */
+    padding: 20px; /* Padding for footer */
+    position: relative; /* Position footer */
+    bottom: 0; /* Stick to the bottom */
+    width: 100%; /* Full width footer */
+}
+
+/* Hover effect for input fields */
+.hover-border:hover, .hover-border:focus {
+    border-color: #007bff !important; /* Bootstrap's primary blue */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.profile-photo-preview {
+    position: relative;
+    width: 150px; /* You can change this size as per your requirement */
+    height: 150px; /* Square dimensions */
+    margin-bottom: 10px;
+}
+
+.square-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This ensures the image will cover the square without distortion */
+    border-radius: 10px; /* Optional: Rounded corners for a stylish effect */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Add some shadow */
+}
+
+.alert-container {
+    position: fixed; /* Change as per your design */
+    top: 20px;       /* Adjust position as needed */
+    right: 20px;     /* Adjust position as needed */
+    z-index: 1000;   /* Ensure it's on top of other content */
+}
+
+/* Optional: Add this to your CSS file */
+.badge {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 0.25em 0.5em;
+}
+
+.notification-unread {
+    background-color: #f8f9fa; /* Light background for unread notifications */
+    font-weight: bold; /* Make unread notifications bold */
+}
+
+.image-container {
+    overflow: hidden;
+    border-radius: 8px; /* Optional: rounded corners */
+    transition: transform 0.3s ease; 
+}
+
+.image-container:hover{
+    transform: scale(1.05); /* Slight scale up on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.zoom-image {
+    transition: transform 0.3s ease; /* Smooth transition for scaling */
+    width: 100%;
+    height: auto;
+}
+
+.zoom-image:hover {
+    transform: scale(1.05); /* Slight scale up on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/*  */ /**/ /**/
+
+
+  

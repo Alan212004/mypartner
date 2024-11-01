@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Admin Profiles</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Profile Photo</th>
+            <th>Email</th>
+            <th>Verified</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for profile in profiles %}
+        <tr>
+            <td>{{ profile.user.username }}</td>
+            <td><img src="{{ profile.profile_photo.url }}" alt="{{ profile.user.username }}'s Profile Picture" style="width: 50px; height: 50px;"></td>
+            <td>{{ profile.user.email }}</td>
+            <td>{{ profile.is_verified|yesno:"Yes,No" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

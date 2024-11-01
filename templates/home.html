@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Home - My Partner {% endblock %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+<div class="jumbotron text-center">
+  <h1>Welcome to My Partner</h1>
+  <p>Find your perfect match today!</p>
+  <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+</div>
+{% endif %}
+
+{% if user.is_authenticated and user.is_superuser %}
+<div class="container mt-5">
+  <h2>All Profiles ({{ profiles|length }})</h2>
+  <div class="row profile-container">
+    {% for profile in profiles %}
+     
+        {% include 'profile_card.html' with profile=profile %}
+    
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<!-- Store the length of profiles in a variable -->
+{% with total_profiles=profiles|length %}
+<!-- Recommended Profiles -->
+{% if has_profiles %}
+<div class="col shadow-lg mt-5">
+  <h2>Recommended Profiles ({{ total_profiles }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevRecommended" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderRecommended">
+      {% for profile in profiles %}
+        {% include 'profile_card.html' with profile=profile %}
+      {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextRecommended" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Preferred Religion Profiles -->
+{% if user.is_authenticated and has_preferred_religion_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.preferred_religion }} Profiles ({{ total_profiles }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevPreferredReligion" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderPreferredReligion">
+      {% for profile in preferred_religion_profiles %}
+        {% include 'profile_card.html' with profile=profile %}
+      {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextPreferredReligion" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Next session: Caste-based profiles -->
+{% if user.is_authenticated and has_preferred_caste_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.preferred_caste }} Caste Profiles ({{ total_profiles }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevPreferredCaste" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderPreferredCaste">
+      {% for profile in preferred_caste_profiles %}
+        {% include 'profile_card.html' with profile=profile %}
+      {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextPreferredCaste" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Next session: Job-based profiles -->
+{% if user.is_authenticated and has_preferred_job_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.preferred_job }} Profiles ({{ profiles|length }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevPreferredJob" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderPreferredJob">
+    {% for profile in preferred_job_profiles %}
+    {% include 'profile_card.html' with profile=profile %}
+    {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextPreferredJob" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Next session: family Background-based profiles -->
+{% if user.is_authenticated and has_preferred_family_background_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.preferred_family_background }} Family Profiles ({{ profiles|length }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevPreferredFamilyBackground" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderPreferredFamilyBackground">
+    {% for profile in preferred_family_background_profiles %}
+    {% include 'profile_card.html' with profile=profile %}
+    {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextPreferredFamilyBackground" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+
+<!--  --> <!--  --> <!--  --> <!--  -->
+<!-- related to user Detail Profiles -->
+<!--  --> <!--  --> <!--  --> <!--  -->
+
+<!-- Next session: Religion-based profiles -->
+{% if user.is_authenticated and has_religion_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.religion }} Profiles ({{ profiles|length }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevReligion" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderReligion">
+    {% for profile in religion_profiles %}
+    {% include 'profile_card.html' with profile=profile %}
+    {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextReligion" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Repeat similar blocks for job_profiles, caste_profiles, and family_profiles -->
+
+<!-- Next session: Caste-based profiles -->
+{% if user.is_authenticated and has_caste_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.caste }} Caste Profiles ({{ profiles|length }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevCaste" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderCaste">
+    {% for profile in caste_profiles %}
+    {% include 'profile_card.html' with profile=profile %}
+    {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextCaste" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Next session: Job-based profiles -->
+{% if user.is_authenticated and has_job_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.job }} Profiles ({{ profiles|length }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevJob" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderJob">
+    {% for profile in job_profiles %}
+    {% include 'profile_card.html' with profile=profile %}
+    {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextJob" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+
+<!-- Next session: Job-based profiles -->
+{% if user.is_authenticated and has_family_background_profiles %}
+<div class="col shadow-lg mt-4">
+  <h2>{{ user.profile.family_background }} Family Profiles ({{ profiles|length }})</h2><br>
+  <div class="profile-slider-wrapper">
+    <button class="carousel-control-prev" id="prevFamily" aria-hidden="true">‹</button>
+    <div class="profile-slider" id="profileSliderFamily">
+    {% for profile in family_background_profiles %}
+    {% include 'profile_card.html' with profile=profile %}
+    {% endfor %}
+    </div>
+    <button class="carousel-control-next" id="nextFamily" aria-hidden="true">›</button>
+  </div>
+</div>
+{% endif %}
+{% endwith %}
+{% endif %}
+<script> 
+  document.addEventListener("DOMContentLoaded", function () {
+    const sliders = [
+      { id: 'profileSliderRecommended', prev: 'prevRecommended', next: 'nextRecommended' },
+      { id: 'profileSliderPreferredReligion', prev: 'prevPreferredReligion', next: 'nextPreferredReligion' },
+      { id: 'profileSliderPreferredCaste', prev: 'prevPreferredCaste', next: 'nextPreferredCaste' },
+      { id: 'profileSliderPreferredJob', prev: 'prevPreferredJob', next: 'nextPreferredJob' },
+      { id: 'profileSliderPreferredFamilyBackground', prev: 'prevPreferredFamilyBackground', next: 'nextPreferredFamilyBackground' },
+      { id: 'profileSliderReligion', prev: 'prevReligion', next: 'nextReligion' },
+      { id: 'profileSliderCaste', prev: 'prevCaste', next: 'nextCaste' },
+      { id: 'profileSliderJob', prev: 'prevJob', next: 'nextJob' },
+      { id: 'profileSliderFamily', prev: 'prevFamily', next: 'nextFamily' }
+    ];
+
+    sliders.forEach(slider => {
+      const profileSlider = document.getElementById(slider.id);
+      const prevButton = document.getElementById(slider.prev);
+      const nextButton = document.getElementById(slider.next);
+
+      function updateButtonVisibility() {
+        const scrollWidth = profileSlider.scrollWidth;
+        const clientWidth = profileSlider.clientWidth;
+
+        // Show/Hide buttons based on overflow
+        prevButton.style.display = profileSlider.scrollLeft > 0 ? 'block' : 'none';
+        nextButton.style.display = profileSlider.scrollLeft < (scrollWidth - clientWidth) ? 'block' : 'none';
+      }
+
+      // Initial check to set button visibility
+      updateButtonVisibility();
+
+      // Scroll event listener to update buttons
+      profileSlider.addEventListener('scroll', updateButtonVisibility);
+
+      // Next button click event
+      nextButton.addEventListener('click', function () {
+        profileSlider.scrollBy({ left: clientWidth, behavior: 'smooth' });
+      });
+
+      // Previous button click event
+      prevButton.addEventListener('click', function () {
+        profileSlider.scrollBy({ left: -clientWidth, behavior: 'smooth' });
+      });
+    });
+  });
+</script>
+
+
+<style>
+  .profile-container {
+    display: flex; /* Use flexbox for layout */
+    flex-wrap: wrap; /* Allow items to wrap onto the next line */
+    justify-content: space-between; /* Space out the cards evenly */
+    gap: 15px; /* Add space between profile cards */
+  }
+
+  .profile-card-container {
+    flex: 0 1 calc(25% - 15px); /* 4 cards per row */
+    box-sizing: border-box; /* Include padding and margin in width */
+    max-width: calc(25% - 15px); /* Set a max width to maintain layout */
+  }
+
+  /* Media queries for responsive design */
+  @media (max-width: 768px) {
+    .profile-card-container {
+      flex: 0 1 calc(50% - 15px); /* 2 cards per row on medium screens */
+      max-width: calc(50% - 15px); /* Set max width for medium screens */
+    }
+  }
+
+  @media (max-width: 480px) {
+    .profile-card-container {
+      flex: 0 1 calc(100% - 15px); /* 1 card per row on small screens */
+      max-width: calc(100% - 15px); /* Set max width for small screens */
+    }
+  }
+
+  /* Additional styles for the profile slider and buttons */
+  .profile-slider-wrapper {
+    position: relative;
+    overflow: hidden; /* Hide overflow content */
+  }
+
+  .profile-slider {
+    display: flex; /* Arrange children in a row */
+    gap: 10px; /* Space between profile cards */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    scroll-behavior: smooth; /* Smooth scrolling effect */
+    padding: 10px 0; /* Vertical padding */
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    display: none; /* Hide by default; shown conditionally */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .carousel-control-prev {
+    left: 0; /* Position to the left */
+  }
+
+  .carousel-control-next {
+    right: 0; /* Position to the right */
+  }
+
+
+  .profile-card-container {
+    flex: 0 1 calc(25% - 15px); /* 4 cards per row on large screens */
+    box-sizing: border-box;
+    max-width: calc(25% - 15px);
+}
+
+@media (max-width: 768px) {
+    .profile-card-container {
+        flex: 0 1 calc(50% - 15px); /* 2 cards per row on medium screens */
+        max-width: calc(50% - 15px);
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card-container {
+        flex: 0 1 calc(100% - 15px); /* 1 card per row on small screens */
+        max-width: calc(100% - 15px);
+    }
+}
+
+</style>
+
+
+{% endblock %}

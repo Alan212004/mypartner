@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-info">
+                <div class="card-header">Total Profiles</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_profiles }}</h5>
+                    <p class="card-text">Profiles registered in the system.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-header">Total Notifications</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_notifications }}</h5>
+                    <p class="card-text">Notifications sent to users.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-warning">
+                <div class="card-header">Total Interests</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_interests }}</h5>
+                    <p class="card-text">Interest requests sent between users.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-secondary">
+                <div class="card-header">Verified Profiles</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ verified_profiles }}</h5>
+                    <p class="card-text">Profiles that have been verified.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

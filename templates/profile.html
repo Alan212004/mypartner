@@ -1,0 +1,201 @@
+{% extends 'base.html' %} 
+{% load form_tags %}
+{% load static %}
+{% block title %}Profile Details{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+        <h3 class="text-center mb-4">Profile Details</h3>
+
+        <!-- Profile Picture Section -->
+        <div class="row mb-4">
+            <div class="col-md-12 d-flex justify-content-center align-items-center">
+                {% if user.profile.profile_photo %}
+                    <img
+                        src="{{ user.profile.profile_photo.url }}"
+                        alt="Profile Picture"
+                        class="img-fluid rounded-circle"
+                        style="width: 300px; height: 300px;"
+                    />
+                {% else %}
+                    <img
+                        src="{% if user.profile.gender == 'Female' %}{% static 'media/profile_pics/female_default.png' %}{% else %}{% static 'media/profile_pics/male_default.jpg' %}{% endif %}"
+                        alt="Default Profile Picture"
+                        class="img-fluid rounded-circle"
+                        style="width: 300px; height: 300px;"
+                    />
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Profile Details Section -->
+        <h2>Personal Details</h2>
+        <dl class="row">
+            <dt class="col-md-6">Full Name:</dt>
+            <dd class="col-md-6">{{ user.first_name }} {{ user.last_name }}</dd>
+
+            <dt class="col-md-6">Username:</dt>
+            <dd class="col-md-6">{{ user.username }}</dd>
+
+            <dt class="col-md-6">Email:</dt>
+            <dd class="col-md-6">{{ user.email }}</dd>
+
+            <dt class="col-md-6">Age:</dt>
+            <dd class="col-md-6">{{ user.profile.age }}</dd>
+
+            <dt class="col-md-6">Gender:</dt>
+            <dd class="col-md-6">{{ user.profile.gender }}</dd>
+
+            <dt class="col-md-6">Phone Number:</dt>
+            <dd class="col-md-6">{{ user.profile.phone_number }}</dd>
+
+            <dt class="col-md-6">Address:</dt>
+            <dd class="col-md-6">{{ user.profile.address|default:"Not provided" }}</dd>
+
+            <dt class="col-md-6">Location:</dt>
+            <dd class="col-md-6">{{ user.profile.location }} ({{ user.profile.pin|default:"N/A" }})</dd>
+
+            <dt class="col-md-6">Education:</dt>
+            <dd class="col-md-6">{{ user.profile.education|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Job:</dt>
+            <dd class="col-md-6">{{ user.profile.job|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Religion:</dt>
+            <dd class="col-md-6">{{ user.profile.religion|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Caste:</dt>
+            <dd class="col-md-6">{{ user.profile.caste|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">About Me:</dt>
+            <dd class="col-md-6">{{ user.profile.about_me|default:"Not specified" }}</dd>
+        </dl>
+
+        <h2>Family Details</h2>
+        <dl class="row">
+            <dt class="col-md-6">Family Background:</dt>
+            <dd class="col-md-6">{{ user.profile.family_background|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Father Name:</dt>
+            <dd class="col-md-6">{{ user.profile.father_name|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Mother Name:</dt>
+            <dd class="col-md-6">{{ user.profile.mother_name|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Number Of Siblings:</dt>
+            <dd class="col-md-6">{{ user.profile.siblings_no|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Father Job:</dt>
+            <dd class="col-md-6">{{ user.profile.father_job|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Mother Job:</dt>
+            <dd class="col-md-6">{{ user.profile.mother_job|default:"Not specified" }}</dd>
+        </dl>
+
+        <h2>My Preference (To Be A Partner)</h2>
+        <dl class="row">
+            <dt class="col-md-6">Minimum Age:</dt>
+            <dd class="col-md-6">{{ user.profile.preferred_age_min|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Maximum Age:</dt>
+            <dd class="col-md-6">{{ user.profile.preferred_age_max|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Religion:</dt>
+            <dd class="col-md-6">{{ user.profile.preferred_religion|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Caste:</dt>
+            <dd class="col-md-6">{{ user.profile.preferred_caste|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Job:</dt>
+            <dd class="col-md-6">{{ user.profile.preferred_job|default:"Not specified" }}</dd>
+
+            <dt class="col-md-6">Family Background:</dt>
+            <dd class="col-md-6">{{ user.profile.preferred_family_background|default:"Not specified" }}</dd>
+        </dl>
+
+        <h3>Social Media</h3>
+        <dl class="row">
+            <dt class="col-md-6">Facebook:</dt>
+            <dd class="col-md-6">
+                {% if user.profile.facebook_id %}
+                    <a href="{{ user.profile.facebook_id }}" target="_blank">{{ user.profile.facebook_id }}</a>
+                {% else %}
+                    Not provided
+                {% endif %}
+            </dd>
+            
+
+            <dt class="col-md-6">Instagram:</dt>
+            <dd class="col-md-6">
+                {% if user.profile.instagram_id %}
+                    <a href="{{ user.profile.instagram_id }}" target="_blank">{{ user.profile.instagram_id }}</a>
+                {% else %}
+                    Not provided
+                {% endif %}
+            </dd>
+            
+
+            <dt class="col-md-6">Twitter:</dt>
+            <dd class="col-md-6">
+                {% if user.profile.twitter_id %}
+                    <a href="{{ user.profile.twitter_id }}" target="_blank">{{ user.profile.twitter_id }}</a>
+                {% else %}
+                    Not provided
+                {% endif %}
+            </dd>
+        </dl>
+
+        <!-- Gallery Section -->
+        <div>
+            <h3>Additional Photos</h3>
+            <div class="row">
+                {% for image in images %}
+                    <div class="col-md-4 mb-3">
+                        <div class="image-container">
+                            <img src="{{ image.image.url }}" class="img-fluid rounded zoom-image" alt="Additional Photo">
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No additional photos uploaded.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+
+        <!-- Edit Profile Button Section -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-4 text-center">
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-block"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const alerts = document.querySelectorAll('.alert-container .alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0'; // Fade out effect
+                setTimeout(() => {
+                    alert.remove(); // Remove the alert from DOM after fading out
+                }, 1000); // Adjust duration for fade out
+            }, 10000); // Show for 10 seconds
+        });
+    });
+
+    function fadeOutAlerts() {
+        const alerts = document.querySelectorAll('.alert-container .alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 1000);
+            }, 10000);
+        });
+    }
+    document.addEventListener("DOMContentLoaded", fadeOutAlerts);
+    
+</script>
+
+{% endblock %}

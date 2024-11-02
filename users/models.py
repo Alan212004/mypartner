@@ -65,7 +65,6 @@ class Profile(models.Model):
 
     is_verified = models.BooleanField(default=False)
     needs_verification = models.BooleanField(default=False)
-    
 
     def clean(self):
         super().clean()
@@ -149,11 +148,12 @@ class Notification(models.Model):
         return f"{self.sender} -> {self.receiver}: {self.message}"
 
 class InterestRequest(models.Model):
-    from_user = models.ForeignKey(Profile, related_name='sent_interest_requests', on_delete=models.CASCADE)
-    to_user = models.ForeignKey(Profile, related_name='received_interest_requests', on_delete=models.CASCADE)
+    from_user = models.ForeignKey(Profile, related_name='sent_interest_requests', on_delete=models.CASCADE, null=True)
+    to_user = models.ForeignKey(Profile, related_name='received_interest_requests', on_delete=models.CASCADE, null=True)
     is_accepted = models.BooleanField(default=False)
-    is_declined = models.BooleanField(default=False)  # Add this field
+    is_declined = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Interest(models.Model):
     sender = models.ForeignKey(User, related_name='sent_interests', on_delete=models.CASCADE)

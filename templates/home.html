@@ -13,7 +13,7 @@
 {% endif %}
 
 {% if user.is_authenticated and user.is_superuser %}
-<div class="container mt-5">
+<div class="container mt-2">
   <h2>All Profiles ({{ profiles|length }})</h2>
   <div class="row profile-container">
     {% for profile in profiles %}
@@ -28,7 +28,7 @@
 {% with total_profiles=profiles|length %}
 <!-- Recommended Profiles -->
 {% if has_profiles %}
-<div class="col shadow-lg mt-5">
+<div class="col shadow-lg mt-3">
   <h2>Recommended Profiles ({{ total_profiles }})</h2><br>
   <div class="profile-slider-wrapper">
     <button class="carousel-control-prev" id="prevRecommended" aria-hidden="true">‹</button>

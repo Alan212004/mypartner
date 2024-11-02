@@ -18,6 +18,11 @@ from django.db import transaction
 from django.urls import reverse
 from .models import Notification, Interest, NotificationType
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth import views as auth_views
+from .forms import CustomPasswordResetForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.views import PasswordResetView
 
 @property
 def unread_notifications_count(self):
@@ -121,7 +126,7 @@ def home(request):
             profiles = Profile.objects.all().exclude(user=current_user)
         else:
             # Fetch all verified profiles for regular users
-            profiles = Profile.objects.filter(is_verified=True).exclude(user=current_user)
+            profiles = Profile.objects.filter(is_verified=True, needs_verification=True).exclude(user=current_user)
 
             # Try to fetch the current user's profile
             try:
@@ -306,14 +311,8 @@ def forgot_username(request):
             email = form.cleaned_data['email']
             try:
                 user = User.objects.get(email=email)
-                send_mail(
-                    'Your Username',
-                    f'Your username is {user.username}.',
-                    'from@example.com',  # Use settings.EMAIL_HOST_USER
-                    [email],
-                    fail_silently=False,
-                )
-                return render(request, 'username_sent.html')  # Inform the user
+                # Pass the username to the template
+                return render(request, 'username_sent.html', {'username': user.username})
             except User.DoesNotExist:
                 form.add_error('email', 'No user with this email exists.')
     else:
@@ -321,6 +320,21 @@ def forgot_username(request):
     
     return render(request, 'forgot_username.html', {'form': form})
 
+User = get_user_model()
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        username = form.cleaned_data['username']
+        try:
+            user = User.objects.get(email=email, username=username)
+            # Generate the password reset link and send email
+            super().form_valid(form)  # This handles sending the email with the reset link
+            return render(self.request, 'password_reset_done.html')  # Inform the user
+        except User.DoesNotExist:
+            form.add_error(None, "No user found with this email and username combination.")
+            return self.form_invalid(form)
 
 def login_view(request):
     if request.method == 'POST':
@@ -343,43 +357,27 @@ def profile_detail(request, username):
     user = get_object_or_404(User, username=username)  # Correctly fetch the User instance
     
     # Fetch the profile based on the User instance
-    profile = get_object_or_404(Profile, user=user)  # Use the User instance
+    profile = get_object_or_404(Profile, user=user)
 
     # Check for existing interest requests and statuses
     interest_requested = Interest.objects.filter(sender=request.user, receiver=profile.user).exists()
     interest_accepted = Interest.objects.filter(sender=profile.user, receiver=request.user).filter(status='accepted').exists()
     interest_declined = Interest.objects.filter(sender=profile.user, receiver=request.user).filter(status='declined').exists()
 
-    # Fetch the notification ID if the request was made
-    notification_id = None
-    if interest_requested:
-        notification = Notification.objects.filter(sender=request.user.profile, receiver=profile).first()
-        if notification:
-            notification_id = notification.id
-
-    # Only create a notification if the user is not viewing their own profile and is not an admin
-    if request.user != profile.user and not request.user.is_staff:
-        Notification.objects.create(
-            sender=request.user.profile,
-            receiver=profile,
-            message="viewed your profile",
-            notification_type=NotificationType.GENERAL
-        )
-
-    # Gather additional images related to the profile
-    additional_images = ProfileImage.objects.filter(profile=profile)
+    # Check if the logged-in user has sent an interest request to the profile user
+    sent_requests = Interest.objects.filter(sender=request.user, receiver=profile.user)
 
     # Prepare the context for rendering
     context = {
         'profile': profile,
-        'additional_images': additional_images,
+        'sent_requests': sent_requests,  # Pass the sent requests to the template
         'interest_requested': interest_requested,
         'interest_accepted': interest_accepted,
         'interest_declined': interest_declined,
-        'notification_id': notification_id,
     }
     
     return render(request, 'profile_detail.html', context)  # Render the profile detail template
+
 
 
 @login_required
@@ -405,23 +403,19 @@ def upload_images(request):
 
 @login_required
 def notifications(request):
-    # Get the current user's profile
     current_user_profile = request.user.profile
-    
-    # Fetch all notifications related to the current user's profile
-    notifications = current_user_profile.received_notifications.all().order_by('-created_at')  # Assuming you have a 'created_at' field
-
-    # Optionally mark notifications as read
+    notifications = current_user_profile.received_notifications.all().order_by('-created_at')
     unread_notifications = notifications.filter(is_read=False)
-    if unread_notifications.exists():
-        unread_notifications.update(is_read=True)
+
+    # Mark all as read if necessary (optional)
+    notifications.update(is_read=True)
 
     context = {
         'notifications': notifications,
-        'unread_count': unread_notifications.count(),  # Count of unread notifications
+        'unread_count': unread_notifications.count(),
     }
-    
     return render(request, 'notifications.html', context)
+
 
 
 @login_required
@@ -530,38 +524,44 @@ def decline_interest(request, notification_id):
 
 
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.db import transaction
+from .models import Profile, Interest, Notification, NotificationType
+
 @login_required
 def send_interest(request, profile_id):
-    if request.method == 'POST':
-        profile = get_object_or_404(Profile, id=profile_id)
+    profile = get_object_or_404(Profile, id=profile_id)
 
+    if request.method == 'POST':
         if profile.user == request.user:
             messages.error(request, "You cannot send an interest request to yourself.")
             return redirect('profile_detail', username=profile.user.username)
 
         try:
-            with transaction.atomic():
-                # Create or update the interest record
-                Interest.objects.update_or_create(
-                    sender=request.user,
-                    receiver=profile.user,
-                    defaults={'status': 'pending'}
-                )
+            # Create or update the interest record
+            Interest.objects.update_or_create(
+                sender=request.user,
+                receiver=profile.user,
+                defaults={'status': 'pending'}
+            )
 
-                # Create a notification for the receiver
-                Notification.objects.create(
-                    sender=request.user.profile,
-                    receiver=profile,
-                    message=f"{request.user.username} has sent you an interest request.",
-                    notification_type=NotificationType.INTEREST_REQUEST
-                )
+            # Create a notification for the receiver
+            Notification.objects.create(
+                sender=request.user.profile,
+                receiver=profile,
+                message=f"{request.user.username} has sent you an interest request.",
+                notification_type=NotificationType.INTEREST_REQUEST
+            )
 
-                messages.success(request, "Interest request sent successfully.")
-                return redirect('profile_detail', username=profile.user.username)
+            messages.success(request, "Interest request sent successfully.")
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
-    
+        return redirect('profile_detail', username=profile.user.username)
+
+    messages.error(request, "Invalid request method.")
     return redirect('profile_detail', username=profile.user.username)
+
 
 
 def not_interested(request, notification_id):
@@ -583,7 +583,7 @@ def admin_dashboard(request):
     total_profiles = Profile.objects.count()
     total_notifications = Notification.objects.count()
     total_interests = Interest.objects.count()
-    verified_profiles = Profile.objects.filter(is_verified=True).count()
+    verified_profiles = Profile.objects.filter(is_verified=True, needs_verification=True).count()
 
     context = {
         'total_profiles': total_profiles,
@@ -594,10 +594,43 @@ def admin_dashboard(request):
     
     return render(request, 'admin_dashboard.html', context)
 
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 @staff_member_required
 def admin_profiles(request):
-    profiles = Profile.objects.all()  # Fetch all user profiles for admin
-    return render(request, 'admin_profiles.html', {'profiles': profiles})
+    search_query = request.GET.get('search', '')
+    sort_option = request.GET.get('sort', 'user__first_name')  # Default sorting by first name
+
+    # Fetch profiles, excluding the current user
+    profiles = Profile.objects.exclude(user=request.user)
+
+    # Apply search filter
+    if search_query:
+        profiles = profiles.filter(
+            Q(user__username__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(user__email__icontains=search_query) |
+            Q(phone_number__icontains=search_query)
+        )
+
+    # Apply sorting
+    profiles = profiles.order_by(sort_option)
+
+    # Pagination
+    paginator = Paginator(profiles, 10)  # Show 10 profiles per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'admin_profiles.html', {
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'sort_option': sort_option,
+    })
+
+
+
 
 @staff_member_required
 def admin_users(request):
@@ -627,3 +660,21 @@ def admin_notifications(request):
     }
     
     return render(request, 'admin_notifications.html', context)
+
+@require_POST
+def update_is_verified(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    is_verified = request.POST.get('is_verified') == 'True'  # Convert to boolean
+    user.profile.is_verified = is_verified
+    user.profile.save()
+    messages.success(request, "Verification status updated successfully.")
+    return redirect('admin_profiles')  # Replace with the URL of your admin profiles page
+
+@require_POST
+def update_needs_verification(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    needs_verification = request.POST.get('needs_verification') == 'True'  # Convert to boolean
+    user.profile.needs_verification = needs_verification
+    user.profile.save()
+    messages.success(request, "Verification status updated successfully.")
+    return redirect('admin_profiles')  # Replace with the URL of your admin profiles page

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Username Sent{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="alert alert-success mt-4 text-center">
+        {% if username %}
+            <p>Your username is: <strong>{{ username }}</strong></p>
+        {% else %}
+            <p>No user with the provided email exists.</p>
+        {% endif %}
+    </div>
+    <a href="{% url 'login' %}" class="btn btn-primary mt-3">Back to Login</a>
+</div>
+{% endblock %}
+

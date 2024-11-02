@@ -3,6 +3,7 @@ from .models import Profile, ProfileImage
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date
+from django.contrib.auth.forms import PasswordResetForm
 # Form for updating user profile information
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -118,4 +119,17 @@ class ProfileImageForm(forms.ModelForm):
         fields = ['image'] 
 
 
-   
+class CustomPasswordResetForm(forms.Form):
+    email = forms.EmailField(label="Email", required=True)
+    username = forms.CharField(max_length=150, label="Username", required=True)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+        username = cleaned_data.get('username')
+
+        if email and username:
+            try:
+                user = User.objects.get(email=email, username=username)
+            except User.DoesNotExist:
+                raise forms.ValidationError("No user found with this email and username combination.")

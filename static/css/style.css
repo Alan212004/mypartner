@@ -214,6 +214,22 @@ footer {
 }
 
 /*  */ /**/ /**/
+.profile-photo {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+    
+.profile-photo:hover {
+    transform: scale(1.1);  /* Slight zoom effect */
+    border-color: #007bff;  /* Change border color on hover */
+}
 
-
-  
+.profile-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+  .profile-card-container:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s;
+  }
+      

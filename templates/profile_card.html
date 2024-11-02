@@ -1,24 +1,24 @@
 <div class="col-md-3 col-lg-3 col-sm-12 col-xl-3 mb-3">
-        <div class="card h-100 w-100 card-hover text-center shadow">
-            {% if profile.profile_photo %}
-                <img src="{{ profile.profile_photo.url }}"
-                     alt="{{ profile.user.username }}'s profile photo" class="img-fluid rounded-circle mb-2 mx-auto" style="width: 85px; height: 85px; object-fit: cover;"/>
-            {% else %}
-                {% if profile.gender == 'Male' %}
-                    <img src="{{ MEDIA_URL }}profile_pics/male_default.jpg" alt="Male default photo" class="img-fluid rounded-circle mb-3 mx-auto" style="width: 75px; height: 75px; object-fit: cover;" />
-                {% elif profile.gender == 'Female' %}
-                    <img src="{{ MEDIA_URL }}profile_pics/female_default.png" alt="Female default photo" class="img-fluid rounded-circle mb-3 mx-auto" style="width: 75px; height: 75px; object-fit: cover;" />
-                {% endif %}
+    <div class="card h-100 w-100 card-hover text-center shadow">
+        {% if profile.profile_photo %}
+            <img src="{{ profile.profile_photo.url }}"
+                 alt="{{ profile.user.username }}'s profile photo" class="img-fluid rounded-circle mb-2 mx-auto" style="width: 85px; height: 85px; object-fit: cover;"/>
+        {% else %}
+            {% if profile.gender == 'Male' %}
+                <img src="{{ MEDIA_URL }}profile_pics/male_default.jpg" alt="Male default photo" class="img-fluid rounded-circle mb-3 mx-auto" style="width: 75px; height: 75px; object-fit: cover;" />
+            {% elif profile.gender == 'Female' %}
+                <img src="{{ MEDIA_URL }}profile_pics/female_default.png" alt="Female default photo" class="img-fluid rounded-circle mb-3 mx-auto" style="width: 75px; height: 75px; object-fit: cover;" />
             {% endif %}
-            
-            <div class="card-body text-center">
-                <h5 class="card-title">{{ profile.first_name }} {{ profile.last_name }} ({{ profile.age }})</h5>
-                <p class="card-text">
-                    Place: {{ profile.place }}<br />
-                    Job: {{ profile.job }}<br />
-                    Religion: {{ profile.religion }}
-                </p>
-                <a href="{% url 'profile_detail' profile.user.username %}" class="btn btn-primary btn-sm">View Profile</a>
-            </div>
+        {% endif %}
+        
+        <div class="card-body text-center">
+            <h5 class="card-title">{{ profile.first_name }} {{ profile.last_name }} ({{ profile.age }})</h5>
+            <p class="card-text">
+                Place: {{ profile.place }}<br />
+                Job: {{ profile.job }}<br />
+                Religion: {{ profile.religion }}
+            </p>
+            <a href="{% url 'profile_detail' profile.user.username %}" class="btn btn-primary btn-sm">View Profile</a>
         </div>
+    </div>
 </div>
